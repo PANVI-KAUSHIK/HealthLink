@@ -37,7 +37,7 @@ export const Sidebar = ({
         <div className="w-10 h-10 bg-[#004D40] rounded-xl flex items-center justify-center">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
         </div>
-        <span className="text-xl font-bold tracking-tight text-[#004D40]">Health Link</span>
+        <span className="text-xl font-bold tracking-tight text-[#004D40]">Health-Link.com</span>
       </div>
 
       <div className="flex-1 space-y-8 overflow-y-auto">
@@ -109,7 +109,7 @@ export const Sidebar = ({
 
       <div className="mt-auto p-4 bg-[#004D40] rounded-2xl relative overflow-hidden group cursor-pointer shadow-xl">
         <div className="relative z-10">
-          <p className="text-white font-bold text-sm mb-1">Download Health Link</p>
+          <p className="text-white font-bold text-sm mb-1">Download Health-Link.com</p>
           <p className="text-white/60 text-[11px] mb-3">Get real-time alerts on your phone</p>
           <button className="bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold py-2 px-4 rounded-lg transition-colors w-full">
             Download App
