@@ -21,16 +21,8 @@ const MAX_APPOINTMENTS_PER_SLOT = 5;
 const API_BASE = typeof window !== 'undefined' ? `http://${window.location.hostname}:5000` : 'http://localhost:5000';
 
 // --- GLOBAL STORAGE HELPERS ---
-const getGlobalDoctors = (): DoctorDetails[] => {
-  const data = localStorage.getItem('healthlink_global_doctors');
-  return data ? JSON.parse(data) : [];
-};
-
-const saveGlobalDoctor = (doctor: DoctorDetails) => {
-  const current = getGlobalDoctors();
-  const filtered = current.filter(d => d.email !== doctor.email);
-  localStorage.setItem('healthlink_global_doctors', JSON.stringify([...filtered, doctor]));
-};
+const getGlobalDoctors = (): DoctorDetails[] => []; // Deprecated, using API
+const saveGlobalDoctor = (doctor: DoctorDetails) => { }; // Deprecated, using API
 
 const getGlobalAppointments = (): BookedAppointment[] => {
   const data = localStorage.getItem('healthlink_global_appointments');
@@ -1597,13 +1589,9 @@ const BookingModal = ({ isOpen, onClose, onBook, patientName, patientEmail }: { 
     fetch(`${API_BASE}/api/doctors`)
       .then(res => res.json())
       .then(data => {
-        const remote = data.map((d: any) => ({ ...d, name: `Dr. ${d.fullName}`, fee: d.consultationFee }));
-        const local = getGlobalDoctors();
-        const merged = [...local];
-        remote.forEach((r: any) => { if (!merged.find(m => m.email === r.email)) merged.push(r); });
-        setRegisteredDoctors(merged);
+        setRegisteredDoctors(data);
       })
-      .catch(() => setRegisteredDoctors(getGlobalDoctors()));
+      .catch(() => setRegisteredDoctors([]));
   }, [isOpen]);
   const specializations = ['Cardiology', 'Neurology', 'Oncology', 'Pediatrics', 'Orthopedics', 'General Physician', 'Dermatology'];
 
@@ -1618,7 +1606,7 @@ const BookingModal = ({ isOpen, onClose, onBook, patientName, patientEmail }: { 
         d.specialization === selectedSpecialization
       )
       .map(d => ({
-        name: `Dr. ${d.fullName}`,
+        name: d.fullName,
         email: d.email,
         specialization: d.specialization,
         fee: d.consultationFee
@@ -1630,9 +1618,9 @@ const BookingModal = ({ isOpen, onClose, onBook, patientName, patientEmail }: { 
   const availableSlotsForDoctorAndDate = useMemo(() => {
     if (!selectedDoctor || !selectedDate) return [];
 
-    const registered = registeredDoctors.find(d => `Dr. ${d.fullName}` === selectedDoctor.name);
+    const registered = registeredDoctors.find(d => d.fullName === selectedDoctor.name);
     if (registered && registered.availability && registered.availability[selectedDate]) {
-      return registered.availability[selectedDate].filter(slot => !isTimePassed(slot, selectedDate));
+      return (registered.availability[selectedDate] as string[]).filter(slot => !isTimePassed(slot, selectedDate));
     }
 
     return [];

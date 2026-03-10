@@ -95,8 +95,9 @@ app.post('/api/auth/verify-otp', (req, res) => {
         userData.hasThyroid = !!userData.hasThyroid;
         try {
             if (userData.latestMedicines) userData.latestMedicines = JSON.parse(userData.latestMedicines);
+            userData.availability = {};
             if (userData.availabilityJSON) {
-                userData.availability = JSON.parse(userData.availabilityJSON);
+                try { userData.availability = JSON.parse(userData.availabilityJSON); } catch (e) { }
                 delete userData.availabilityJSON;
             }
         } catch (e) { }
@@ -219,7 +220,14 @@ app.post('/api/auth/login', (req, res) => {
 
 app.put('/api/users/:email', (req, res) => {
     const { email } = req.params;
-    const data = req.body;
+    let data = { ...req.body };
+
+    if (data.role === 'doctor' && data.fullName) {
+        const trimmedName = data.fullName.trim();
+        if (!trimmedName.toLowerCase().startsWith('dr. ') && !trimmedName.toLowerCase().startsWith('dr ')) {
+            data.fullName = 'Dr. ' + trimmedName;
+        }
+    }
 
     // Create dynamic update query based on fields provided
     const keys = Object.keys(data).filter(k => k !== 'email' && k !== 'pin');
